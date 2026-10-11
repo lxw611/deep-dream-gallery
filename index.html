@@ -1,0 +1,2113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0A192F" />
+  <link rel="icon" href="data:," />
+  <title>拾光 · TIME GALLERY</title>
+  <style>
+    :root {
+      --ink: #0A192F;
+      --paper: #F7F8FA;
+      --paper-deep: #E7F0F4;
+      --bone: #F7F8FA;
+      --forest: #0A192F;
+      --forest-soft: #0E2A47;
+      --rust: #E6655B;
+      --coral-deep: #B74642;
+      --line: rgba(10, 25, 47, .16);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 88% 6%, rgba(10, 25, 47, .06), transparent 30%),
+        radial-gradient(circle at 15% 18%, rgba(255, 255, 255, .38), transparent 26%),
+        var(--paper);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      pointer-events: none;
+      opacity: .13;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.23'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    section[id] { scroll-margin-top: 66px; }
+
+    .scroll-progress {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 80;
+      width: 100%;
+      height: 3px;
+      pointer-events: none;
+    }
+
+    .scroll-progress span {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--rust);
+      box-shadow: 0 0 14px rgba(230, 101, 91, .42);
+      transform: scaleX(0);
+      transform-origin: left center;
+      will-change: transform;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 24px;
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 1px;
+      background: currentColor;
+    }
+
+    .site-header {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 40;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      width: 100%;
+      height: 78px;
+      padding: 0 3.3vw;
+      color: #0A192F;
+      border-bottom: 1px solid rgba(10, 25, 47, .14);
+      transition: height .35s ease, color .35s ease, background .35s ease, border-color .35s ease;
+    }
+
+    .site-header.is-scrolled,
+    .site-header.is-open {
+      height: 66px;
+      color: var(--bone);
+      background: rgba(10, 25, 47, .92);
+      border-color: rgba(247, 248, 250, .16);
+      backdrop-filter: blur(18px) saturate(1.15);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      width: max-content;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+    }
+
+    .brand-mark svg { width: 22px; height: 22px; }
+
+    .brand-name {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: .16em;
+    }
+
+    .brand-name small {
+      margin-top: 5px;
+      font-family: Inter, sans-serif;
+      font-size: 7px;
+      letter-spacing: .22em;
+    }
+
+    .main-nav {
+      display: flex;
+      align-items: center;
+      gap: clamp(22px, 3vw, 48px);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+    }
+
+    .main-nav a {
+      position: relative;
+      padding: 10px 0;
+    }
+
+    .main-nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 4px;
+      width: 100%;
+      height: 1px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform .3s ease;
+    }
+
+    .main-nav a:hover::after { transform: scaleX(1); transform-origin: left; }
+    .main-nav a.is-active::after { transform: scaleX(1); transform-origin: left; }
+
+    .header-action {
+      justify-self: end;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px;
+      color: var(--bone);
+      background: var(--forest);
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: .13em;
+    }
+
+    .site-header.is-scrolled .header-action,
+    .site-header.is-open .header-action {
+      color: var(--forest);
+      background: var(--bone);
+    }
+
+    .header-action span {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--rust);
+    }
+
+    .menu-toggle {
+      display: none;
+      justify-self: end;
+      width: 40px;
+      height: 40px;
+      color: inherit;
+      background: transparent;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100svh;
+      overflow: hidden;
+      cursor: none;
+      touch-action: pan-y;
+      background: #F7F8FA;
+    }
+
+    .stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #F7F8FA;
+      pointer-events: none;
+    }
+
+    .stage canvas { display: block; width: 100%; height: 100%; }
+
+    .stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(10, 25, 47, .04), transparent 18%, transparent 78%, rgba(10, 25, 47, .12)),
+        radial-gradient(circle at 50% 45%, transparent 55%, rgba(10, 25, 47, .16) 125%);
+      mix-blend-mode: multiply;
+    }
+
+    .loading {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      display: grid;
+      place-items: center;
+      color: #163A5F;
+      background: #F7F8FA;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .22em;
+      transition: opacity .5s ease, visibility .5s ease;
+    }
+
+    .loading.is-ready { opacity: 0; visibility: hidden; }
+
+    .hero-copy {
+      position: relative;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      min-height: 100svh;
+      width: min(720px, 62vw);
+      padding: 150px 0 8vh 5vw;
+      pointer-events: none;
+    }
+
+    .hero-index {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      color: rgba(10, 25, 47, .78);
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: .2em;
+    }
+
+    .hero-index::before {
+      content: "02";
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      font-size: 8px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      color: #0A192F;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(76px, 12.5vw, 196px);
+      font-weight: 400;
+      letter-spacing: -.075em;
+      line-height: .72;
+      text-transform: uppercase;
+    }
+
+    .hero h1 span {
+      display: inline-block;
+      margin-left: .48em;
+      color: var(--rust);
+      font-style: italic;
+    }
+
+    .hero-bottom {
+      display: grid;
+      grid-template-columns: minmax(240px, 420px) auto;
+      align-items: end;
+      gap: 28px;
+      margin-top: 42px;
+    }
+
+    .hero-bottom p {
+      margin: 0;
+      max-width: 390px;
+      color: rgba(10, 25, 47, .78);
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 14px;
+      line-height: 1.85;
+      letter-spacing: .05em;
+    }
+
+    .hero-link {
+      display: grid;
+      place-items: center;
+      width: 74px;
+      height: 74px;
+      border: 1px solid rgba(10, 25, 47, .5);
+      border-radius: 50%;
+      pointer-events: auto;
+      transition: color .3s ease, background .3s ease, transform .3s ease;
+    }
+
+    .hero-link:hover {
+      color: var(--bone);
+      background: var(--forest);
+      transform: rotate(45deg);
+    }
+
+    .hero-link svg { width: 24px; height: 24px; }
+
+    .excavate-hint {
+      position: absolute;
+      right: 4vw;
+      bottom: 5vh;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(10, 25, 47, .72);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .18em;
+      pointer-events: none;
+      transition: opacity .5s ease, transform .5s ease;
+    }
+
+    .excavate-hint::before {
+      content: "";
+      width: 36px;
+      height: 36px;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 8px rgba(10, 25, 47, .05);
+    }
+
+    .hero.has-moved .excavate-hint { opacity: 0; transform: translateY(8px); }
+
+    .cursor {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 60;
+      width: 90px;
+      height: 90px;
+      border: 1px solid rgba(255, 255, 255, .9);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      mix-blend-mode: difference;
+      transform: translate3d(-100px, -100px, 0);
+      transition: opacity .2s ease, width .2s ease, height .2s ease;
+      will-change: transform;
+    }
+
+    .cursor::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 4px;
+      height: 4px;
+      background: #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .cursor.is-visible { opacity: .9; }
+
+    .museum-intro {
+      position: relative;
+      display: grid;
+      grid-template-columns: .8fr 1.45fr;
+      gap: 8vw;
+      padding: 130px 6vw 150px;
+      border-bottom: 1px solid var(--line);
+      overflow: hidden;
+      isolation: isolate;
+      background: var(--paper);
+    }
+
+    .museum-intro::before {
+      content: "";
+      position: absolute;
+      inset: -36px;
+      z-index: 0;
+      background: url('./assets/about-dream-bg.jpg') center 42% / cover no-repeat;
+      filter: blur(18px) saturate(.9);
+      opacity: .58;
+      transform: scale(1.08);
+    }
+
+    .museum-intro > * {
+      position: relative;
+      z-index: 2;
+    }
+
+    .section-number {
+      color: rgba(10, 25, 47, .55);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .18em;
+    }
+
+    .intro-content h2,
+    .collection-head h2,
+    .timeline-copy h2,
+    .visit-copy h2 {
+      margin: 0;
+      font-family: "Noto Serif SC", "Songti SC", Georgia, serif;
+      font-size: clamp(40px, 5.6vw, 82px);
+      font-weight: 500;
+      letter-spacing: -.04em;
+      line-height: 1.08;
+    }
+
+    .intro-content h2 em { color: var(--rust); font-weight: 400; }
+
+    .intro-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5vw;
+      margin-top: 64px;
+      padding-top: 30px;
+      border-top: 1px solid var(--line);
+    }
+
+    .intro-row p {
+      margin: 0;
+      color: rgba(10, 25, 47, .68);
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 15px;
+      line-height: 2;
+    }
+
+    .intro-narrative {
+      display: block;
+      max-width: 700px;
+    }
+
+    .intro-narrative p {
+      max-width: 700px;
+      color: rgba(10, 25, 47, .72);
+    }
+
+    .intro-narrative p + p {
+      margin-top: 24px;
+    }
+
+    .fact-list { display: grid; gap: 16px; }
+
+    .fact {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .fact strong {
+      font-family: Georgia, serif;
+      font-size: 30px;
+      font-weight: 400;
+    }
+
+    .fact span {
+      color: rgba(10, 25, 47, .56);
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: .13em;
+    }
+
+    .exhibitions {
+      padding: 120px 4vw 130px;
+      color: var(--bone);
+      background: var(--forest);
+    }
+
+    .section-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 55px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(247, 248, 250, .18);
+    }
+
+    .section-topline p {
+      margin: 0;
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: .18em;
+    }
+
+    .section-topline span {
+      color: rgba(247, 248, 250, .52);
+      font-family: Georgia, serif;
+      font-size: 13px;
+      font-style: italic;
+    }
+
+    .scroll-stories {
+      position: relative;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .story-row {
+      --media-y: 0px;
+      --copy-y: 0px;
+      --media-scale: 1.06;
+      --story-opacity: 1;
+      position: relative;
+      min-height: 122vh;
+    }
+
+    .story-stage {
+      position: sticky;
+      top: 10vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(300px, .72fr);
+      align-items: center;
+      gap: clamp(40px, 7vw, 120px);
+      height: 80vh;
+      min-height: 620px;
+    }
+
+    .story-row:nth-child(even) .story-media { order: 2; }
+    .story-row:nth-child(even) .story-copy { order: 1; }
+    .story-row:nth-child(even) .story-stage {
+      grid-template-columns: minmax(300px, .72fr) minmax(0, 1.18fr);
+    }
+
+    .story-media {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 72vh;
+      min-height: 560px;
+      overflow: hidden;
+      padding: 0;
+      color: var(--bone);
+      background: #102A43;
+      border: 0;
+      text-align: left;
+      cursor: pointer;
+      transform: translate3d(0, var(--media-y), 0);
+      transition: box-shadow .45s ease;
+      will-change: transform;
+    }
+
+    .story-media:hover { box-shadow: 0 34px 80px rgba(0, 0, 0, .33); }
+
+    .story-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(3, 12, 24, .04) 55%, rgba(3, 12, 24, .7)),
+        linear-gradient(90deg, rgba(3, 12, 24, .12), transparent 35%);
+      pointer-events: none;
+    }
+
+    .story-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: var(--image-position, center);
+      filter: saturate(.92) contrast(1.02);
+      transform: scale(var(--media-scale));
+      transition: filter .55s ease;
+      will-change: transform;
+    }
+
+    .story-media:hover img { filter: saturate(1.05) contrast(1.02); }
+
+    .story-sequence,
+    .story-view {
+      position: absolute;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: .17em;
+    }
+
+    .story-sequence {
+      left: 24px;
+      top: 24px;
+      width: 38px;
+      height: 38px;
+      justify-content: center;
+      border: 1px solid rgba(247, 248, 250, .7);
+      border-radius: 50%;
+    }
+
+    .story-view { right: 24px; bottom: 24px; }
+
+    .story-view::after {
+      content: "↗";
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 1px solid rgba(247, 248, 250, .48);
+      border-radius: 50%;
+      font-size: 12px;
+    }
+
+    .story-copy {
+      position: relative;
+      z-index: 2;
+      opacity: var(--story-opacity);
+      transform: translate3d(0, var(--copy-y), 0);
+      will-change: transform, opacity;
+    }
+
+    .story-copy::before {
+      content: attr(data-year);
+      display: block;
+      margin-bottom: 28px;
+      color: var(--rust);
+      font-family: Georgia, serif;
+      font-size: clamp(58px, 7vw, 108px);
+      font-style: italic;
+      letter-spacing: -.065em;
+      line-height: .75;
+    }
+
+    .story-copy small {
+      display: block;
+      margin-bottom: 13px;
+      color: rgba(247, 248, 250, .5);
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: .18em;
+    }
+
+    .story-copy h3 {
+      margin: 0;
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: clamp(36px, 4.5vw, 70px);
+      font-weight: 500;
+      letter-spacing: -.04em;
+      line-height: 1.08;
+    }
+
+    .story-copy p {
+      max-width: 430px;
+      margin: 28px 0 0;
+      color: rgba(247, 248, 250, .64);
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 14px;
+      line-height: 1.95;
+    }
+
+    .story-line {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 34px;
+      color: rgba(247, 248, 250, .43);
+      font-size: 8px;
+      font-weight: 750;
+      letter-spacing: .14em;
+    }
+
+    .story-line::before {
+      content: "";
+      flex: 0 0 44px;
+      height: 1px;
+      background: currentColor;
+    }
+
+    .exhibition-grid {
+      display: grid;
+      grid-template-columns: 1.15fr .86fr .86fr;
+      gap: 18px;
+    }
+
+    .exhibit-card {
+      position: relative;
+      min-height: 560px;
+      overflow: hidden;
+      color: var(--bone);
+      background: #0E2942;
+      border: 0;
+      border-radius: 3px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .exhibit-card:nth-child(2) { margin-top: 90px; }
+    .exhibit-card:nth-child(3) { margin-top: 180px; }
+
+    .exhibit-image {
+      position: absolute;
+      inset: 0;
+      background-position: center;
+      background-size: cover;
+      filter: saturate(.9) contrast(1.02);
+      transition: transform .8s cubic-bezier(.22, 1, .36, 1), filter .5s ease;
+    }
+
+    .image-skull { background-image: url('./assets/snow.png'); background-position: center; }
+    .image-ribs { background-image: url('./assets/earth.png'); background-position: 46% center; }
+    .image-ice { background-image: url('./assets/snow.png'); background-position: center 38%; }
+
+    .exhibit-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(3, 12, 24, .03) 30%, rgba(3, 12, 24, .86));
+    }
+
+    .exhibit-card:hover .exhibit-image { transform: scale(1.055); filter: saturate(1.05) contrast(1.02); }
+
+    .card-index {
+      position: absolute;
+      left: 24px;
+      top: 24px;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(247, 248, 250, .65);
+      border-radius: 50%;
+      font-size: 8px;
+    }
+
+    .card-copy {
+      position: absolute;
+      left: 26px;
+      right: 26px;
+      bottom: 28px;
+      z-index: 2;
+    }
+
+    .card-copy small {
+      display: block;
+      margin-bottom: 12px;
+      color: rgba(247, 248, 250, .62);
+      font-size: 8px;
+      font-weight: 750;
+      letter-spacing: .18em;
+    }
+
+    .card-copy h3 {
+      margin: 0;
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: clamp(25px, 2.7vw, 42px);
+      font-weight: 500;
+      letter-spacing: -.03em;
+    }
+
+    .card-copy p {
+      max-width: 320px;
+      margin: 15px 0 0;
+      color: rgba(247, 248, 250, .68);
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .deep-time {
+      display: grid;
+      grid-template-columns: .78fr 1.22fr;
+      min-height: 760px;
+      color: var(--bone);
+      background: var(--coral-deep);
+    }
+
+    .timeline-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 100px 6vw;
+      border-right: 1px solid rgba(247, 248, 250, .24);
+    }
+
+    .timeline-copy p {
+      max-width: 390px;
+      margin: 36px 0 0;
+      color: rgba(247, 248, 250, .74);
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .era-total {
+      margin-top: 90px;
+      font-family: Georgia, serif;
+      font-size: clamp(70px, 9vw, 132px);
+      font-weight: 400;
+      letter-spacing: -.07em;
+      line-height: .8;
+    }
+
+    .era-total small {
+      display: block;
+      margin-top: 18px;
+      font-family: Inter, sans-serif;
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: .2em;
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: stretch;
+      padding: 90px 5vw;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 5vw;
+      right: 5vw;
+      top: 50%;
+      height: 1px;
+      background: rgba(247, 248, 250, .55);
+    }
+
+    .era {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+      padding: 0 22px;
+      border-left: 1px solid rgba(247, 248, 250, .16);
+    }
+
+    .era::before {
+      content: "";
+      position: absolute;
+      left: -5px;
+      top: calc(50% - 5px);
+      width: 9px;
+      height: 9px;
+      background: var(--bone);
+      border: 1px solid var(--rust);
+      border-radius: 50%;
+      box-shadow: 0 0 0 7px rgba(247, 248, 250, .14);
+    }
+
+    .era:nth-child(odd) { justify-content: flex-start; padding-top: 7%; }
+    .era:nth-child(even) { justify-content: flex-end; padding-bottom: 7%; }
+
+    .era time {
+      font-family: Georgia, serif;
+      font-size: clamp(27px, 3vw, 46px);
+      letter-spacing: -.04em;
+    }
+
+    .era strong {
+      margin-top: 9px;
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .era span {
+      margin-top: 8px;
+      color: rgba(247, 248, 250, .66);
+      font-size: 9px;
+      line-height: 1.55;
+      letter-spacing: .08em;
+    }
+
+    .collection {
+      padding: 130px 5vw 150px;
+      background: var(--paper);
+    }
+
+    .collection-head {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      align-items: end;
+      gap: 8vw;
+      margin-bottom: 70px;
+    }
+
+    .collection-head p {
+      margin: 0;
+      padding-left: 30px;
+      color: rgba(10, 25, 47, .62);
+      border-left: 1px solid var(--line);
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .collection-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+
+    .object-card {
+      position: relative;
+      min-height: 430px;
+      overflow: hidden;
+      background: var(--paper-deep);
+      border: 0;
+      cursor: pointer;
+    }
+
+    .object-card:nth-child(1) { grid-column: span 4; }
+    .object-card:nth-child(2) { grid-column: span 5; margin-top: 70px; }
+    .object-card:nth-child(3) { grid-column: span 3; }
+    .object-card:nth-child(4) { grid-column: 3 / span 5; margin-top: 18px; }
+    .object-card:nth-child(5) { grid-column: span 5; margin-top: 90px; }
+
+    .object-image {
+      position: absolute;
+      inset: 0;
+      background-position: center;
+      background-size: cover;
+      filter: saturate(.88) contrast(1.02);
+      transition: transform .65s cubic-bezier(.22, 1, .36, 1), filter .4s ease;
+    }
+
+    .obj-1 { background-image: url('./assets/snow.png'); background-position: center; }
+    .obj-2 { background-image: url('./assets/earth.png'); background-position: 46% center; }
+    .obj-3 { background-image: url('./assets/snow.png'); background-position: center 38%; }
+    .obj-4 { background-image: url('./assets/earth.png'); background-position: center 42%; }
+    .obj-5 { background-image: url('./assets/snow.png'); background-position: 90% 60%; }
+
+    .object-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 48%, rgba(3, 12, 24, .78));
+    }
+
+    .object-card:hover .object-image { transform: scale(1.06); filter: saturate(1.08) contrast(1.02); }
+
+    .object-meta {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      z-index: 2;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      color: var(--bone);
+      text-align: left;
+    }
+
+    .object-meta span {
+      display: block;
+      margin-bottom: 6px;
+      color: rgba(247, 248, 250, .58);
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .16em;
+    }
+
+    .object-meta h3 {
+      margin: 0;
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 21px;
+      font-weight: 500;
+    }
+
+    .object-meta b {
+      display: grid;
+      flex: 0 0 auto;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(247, 248, 250, .5);
+      border-radius: 50%;
+      font-size: 15px;
+      font-weight: 400;
+    }
+
+    .visit {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      min-height: 720px;
+      color: var(--bone);
+      background: var(--forest);
+    }
+
+    .visit-visual {
+      position: relative;
+      min-height: 600px;
+      overflow: hidden;
+      background-image: url('./assets/earth.png');
+      background-position: center;
+      background-size: cover;
+    }
+
+    .visit-visual::after {
+      content: "DEEP DREAM / ∞";
+      position: absolute;
+      left: 36px;
+      bottom: 32px;
+      padding: 10px 14px;
+      color: var(--bone);
+      background: rgba(10, 25, 47, .58);
+      border: 1px solid rgba(247, 248, 250, .26);
+      font-size: 8px;
+      font-weight: 750;
+      letter-spacing: .16em;
+      backdrop-filter: blur(10px);
+    }
+
+    .visit-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 90px 7vw;
+    }
+
+    .visit-info { margin: 58px 0 45px; }
+
+    .visit-line {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 20px;
+      padding: 17px 0;
+      border-bottom: 1px solid rgba(247, 248, 250, .18);
+    }
+
+    .visit-line span {
+      color: rgba(247, 248, 250, .48);
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: .15em;
+    }
+
+    .visit-line strong {
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .ticket-button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(100%, 330px);
+      padding: 18px 20px;
+      color: var(--forest);
+      background: var(--bone);
+      border-radius: 2px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      transition: color .3s ease, background .3s ease;
+    }
+
+    .ticket-button:hover { color: var(--bone); background: var(--coral-deep); }
+
+    footer {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 30px;
+      padding: 80px 5vw 40px;
+      color: var(--ink);
+      background: var(--paper-deep);
+    }
+
+    .footer-title {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: clamp(58px, 9vw, 138px);
+      font-weight: 400;
+      letter-spacing: -.07em;
+      line-height: .76;
+    }
+
+    .footer-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 60px;
+    }
+
+    .footer-nav {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px 30px;
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: .13em;
+    }
+
+    .footer-bottom {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 70px;
+      padding-top: 20px;
+      color: rgba(10, 25, 47, .52);
+      border-top: 1px solid var(--line);
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .13em;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity .8s ease, transform .8s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+    dialog {
+      width: min(620px, calc(100vw - 32px));
+      padding: 0;
+      color: var(--bone);
+      background: var(--forest);
+      border: 1px solid rgba(247, 248, 250, .2);
+      border-radius: 4px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, .38);
+    }
+
+    dialog::backdrop { background: rgba(3, 12, 24, .72); backdrop-filter: blur(9px); }
+
+    .dialog-body { padding: 42px; }
+
+    .dialog-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid rgba(247, 248, 250, .16);
+    }
+
+    .dialog-period { color: var(--rust); font-size: 9px; font-weight: 800; letter-spacing: .16em; }
+
+    .dialog-close {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      color: var(--bone);
+      background: transparent;
+      border: 1px solid rgba(247, 248, 250, .38);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    dialog h3 {
+      margin: 35px 0 18px;
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: clamp(30px, 5vw, 48px);
+      font-weight: 500;
+    }
+
+    dialog p {
+      margin: 0;
+      color: rgba(247, 248, 250, .7);
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    [data-tilt] {
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: transform .22s ease, box-shadow .35s ease;
+    }
+
+    [data-tilt].is-tilting {
+      z-index: 3;
+      box-shadow: 0 28px 65px rgba(3, 12, 24, .30);
+      transition: transform .08s linear, box-shadow .35s ease;
+    }
+
+    [data-tilt] .card-copy,
+    [data-tilt] .object-meta,
+    [data-tilt] .card-index {
+      transform: translateZ(24px);
+    }
+
+    .specimen-lab {
+      padding: 125px 4vw 140px;
+      color: var(--bone);
+      background: #0A2138;
+      border-top: 1px solid rgba(247, 248, 250, .12);
+    }
+
+    .lab-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: end;
+      gap: 7vw;
+      margin-bottom: 58px;
+    }
+
+    .lab-header h2 {
+      margin: 0;
+      font-family: "Noto Serif SC", "Songti SC", Georgia, serif;
+      font-size: clamp(42px, 5.8vw, 84px);
+      font-weight: 500;
+      letter-spacing: -.04em;
+      line-height: 1.05;
+    }
+
+    .lab-header p {
+      max-width: 470px;
+      margin: 0;
+      color: rgba(247, 248, 250, .6);
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .lab-layout {
+      display: grid;
+      grid-template-columns: minmax(210px, .34fr) 1fr;
+      gap: 18px;
+    }
+
+    .lab-list {
+      display: flex;
+      flex-direction: column;
+      border-top: 1px solid rgba(247, 248, 250, .22);
+    }
+
+    .lab-tab {
+      position: relative;
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 94px;
+      padding: 15px 2px;
+      color: rgba(247, 248, 250, .48);
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid rgba(247, 248, 250, .16);
+      text-align: left;
+      cursor: pointer;
+      transition: color .3s ease, padding .3s ease, background .3s ease;
+    }
+
+    .lab-tab:hover,
+    .lab-tab.is-active {
+      padding-left: 14px;
+      color: var(--bone);
+      background: rgba(247, 248, 250, .055);
+    }
+
+    .lab-tab b {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      font-size: 8px;
+      font-weight: 600;
+    }
+
+    .lab-tab span { font-family: "Noto Serif SC", "Songti SC", serif; font-size: 15px; }
+    .lab-tab small { font-size: 8px; font-weight: 750; letter-spacing: .13em; }
+
+    .lab-viewer {
+      position: relative;
+      min-height: 670px;
+      overflow: hidden;
+      background: #081A2E;
+      cursor: crosshair;
+    }
+
+    .lab-image {
+      width: 100%;
+      height: 100%;
+      min-height: 670px;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(.96) contrast(1.02);
+      transform: scale(1.001);
+      transition: opacity .28s ease, transform .8s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .lab-viewer.is-switching .lab-image { opacity: 0; transform: scale(1.025); }
+
+    .lab-viewer::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(3, 12, 24, .1) 40%, rgba(3, 12, 24, .82));
+    }
+
+    .lab-status {
+      position: absolute;
+      left: 24px;
+      top: 24px;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 12px;
+      background: rgba(4, 14, 27, .54);
+      border: 1px solid rgba(247, 248, 250, .24);
+      border-radius: 999px;
+      backdrop-filter: blur(12px);
+      font-size: 8px;
+      font-weight: 750;
+      letter-spacing: .14em;
+    }
+
+    .lab-status::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: #F4A98A;
+      border-radius: 50%;
+      box-shadow: 0 0 0 5px rgba(244, 169, 138, .13);
+    }
+
+    .lab-caption {
+      position: absolute;
+      left: 30px;
+      right: 30px;
+      bottom: 28px;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 30px;
+      pointer-events: none;
+    }
+
+    .lab-caption small {
+      display: block;
+      margin-bottom: 10px;
+      color: rgba(247, 248, 250, .58);
+      font-size: 8px;
+      font-weight: 750;
+      letter-spacing: .17em;
+    }
+
+    .lab-caption h3 {
+      margin: 0;
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: clamp(30px, 4vw, 56px);
+      font-weight: 500;
+      letter-spacing: -.03em;
+    }
+
+    .lab-caption p {
+      max-width: 330px;
+      margin: 0;
+      color: rgba(247, 248, 250, .68);
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 12px;
+      line-height: 1.75;
+    }
+
+    .lab-lens {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 4;
+      width: 164px;
+      height: 164px;
+      overflow: hidden;
+      opacity: 0;
+      background-repeat: no-repeat;
+      background-size: 235% 235%;
+      border: 1px solid rgba(247, 248, 250, .75);
+      border-radius: 50%;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, .3), inset 0 0 0 8px rgba(247, 248, 250, .06);
+      transform: translate(-50%, -50%) scale(.82);
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .lab-lens::after {
+      content: "+";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      color: var(--bone);
+      background: rgba(10, 25, 47, .55);
+      border: 1px solid rgba(247, 248, 250, .55);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 13px;
+    }
+
+    .lab-lens.is-visible { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+    .timeline-pane {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .timeline-pane .timeline { flex: 1; }
+
+    .era {
+      color: inherit;
+      background: transparent;
+      border-top: 0;
+      border-right: 0;
+      border-bottom: 0;
+      text-align: left;
+      cursor: pointer;
+      transition: color .3s ease, background .3s ease;
+    }
+
+    .era:hover,
+    .era.is-active { background: rgba(247, 248, 250, .075); }
+    .era.is-active::before { background: var(--forest); box-shadow: 0 0 0 8px rgba(247, 248, 250, .22); }
+
+    .timeline-readout {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 22px;
+      margin: 0 5vw 55px;
+      padding: 22px 0 0;
+      border-top: 1px solid rgba(247, 248, 250, .3);
+    }
+
+    .timeline-readout b {
+      color: rgba(247, 248, 250, .48);
+      font-size: 9px;
+      letter-spacing: .16em;
+    }
+
+    .timeline-readout p {
+      margin: 0;
+      max-width: 520px;
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    @media (max-width: 900px) {
+      .site-header { grid-template-columns: 1fr auto; height: 66px; padding: 0 20px; }
+      .main-nav, .header-action { display: none; }
+      .menu-toggle { display: grid; place-items: center; }
+      .site-header.is-open .main-nav {
+        position: absolute;
+        left: 0;
+        top: 65px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        padding: 28px 20px 36px;
+        color: var(--bone);
+        background: rgba(10, 25, 47, .96);
+      }
+      .hero-copy { width: 92vw; padding: 130px 20px 10vh; }
+      .hero h1 { font-size: clamp(70px, 22vw, 150px); }
+      .hero-bottom { grid-template-columns: 1fr auto; }
+      .excavate-hint { right: 20px; bottom: 22px; }
+      .museum-intro { grid-template-columns: 1fr; gap: 45px; padding: 95px 22px 110px; }
+      .intro-row { gap: 32px; }
+      .exhibitions { padding: 95px 20px; }
+      .exhibition-grid { grid-template-columns: 1fr 1fr; }
+      .exhibit-card { min-height: 500px; }
+      .exhibit-card:nth-child(2) { margin-top: 70px; }
+      .exhibit-card:nth-child(3) { grid-column: 1 / -1; margin-top: 0; min-height: 420px; }
+      .story-row { min-height: 112vh; }
+      .story-stage { grid-template-columns: minmax(0, 1fr) minmax(260px, .65fr); gap: 38px; }
+      .story-media { height: 66vh; min-height: 500px; }
+      .lab-header { grid-template-columns: 1fr; }
+      .lab-layout { grid-template-columns: 1fr; }
+      .lab-list { display: grid; grid-template-columns: repeat(2, 1fr); }
+      .lab-viewer, .lab-image { min-height: 600px; }
+      .deep-time { grid-template-columns: 1fr; }
+      .timeline-copy { padding: 80px 24px; border-right: 0; border-bottom: 1px solid rgba(247,240,226,.24); }
+      .timeline { min-height: 520px; padding: 70px 24px; }
+      .timeline::before { left: 24px; right: 24px; }
+      .collection { padding: 100px 20px; }
+      .collection-head { grid-template-columns: 1fr; }
+      .object-card:nth-child(n) { grid-column: span 6; margin-top: 0; }
+      .object-card:nth-child(5) { grid-column: 4 / span 6; }
+      .visit { grid-template-columns: 1fr; }
+      .visit-visual { min-height: 520px; }
+      .visit-copy { padding: 90px 24px; }
+      footer { grid-template-columns: 1fr; padding: 70px 24px 34px; }
+      .footer-bottom { margin-top: 30px; }
+    }
+
+    @media (max-width: 600px) {
+      .hero { cursor: auto; }
+      .cursor { display: none; }
+      .hero-copy { justify-content: flex-end; padding-bottom: 110px; }
+      .hero h1 { font-size: 23vw; line-height: .77; }
+      .hero h1 span { margin-left: .25em; }
+      .hero-bottom { grid-template-columns: 1fr; margin-top: 30px; }
+      .hero-link { display: none; }
+      .hero-bottom p { max-width: 290px; font-size: 12px; }
+      .excavate-hint { left: 20px; right: auto; }
+      .intro-row { grid-template-columns: 1fr; }
+      .story-row { min-height: auto; margin-bottom: 100px; }
+      .story-stage { position: relative; top: auto; display: grid; grid-template-columns: 1fr; height: auto; min-height: 0; gap: 32px; }
+      .story-row:nth-child(n) .story-media { order: 1; }
+      .story-row:nth-child(n) .story-copy { order: 2; }
+      .story-media { height: 64vh; min-height: 470px; transform: none; }
+      .story-copy { opacity: 1; transform: none; }
+      .story-copy::before { font-size: 64px; }
+      .exhibition-grid { display: block; }
+      .exhibit-card, .exhibit-card:nth-child(n) { width: 100%; min-height: 500px; margin: 0 0 16px; }
+      .timeline { display: block; min-height: 0; padding: 60px 24px; }
+      .timeline::before { left: 31px; top: 60px; bottom: 60px; right: auto; width: 1px; height: auto; }
+      .era, .era:nth-child(n) { display: block; padding: 0 0 50px 32px; border: 0; }
+      .era::before { left: 3px; top: 8px; }
+      .era:last-child { padding-bottom: 0; }
+      .specimen-lab { padding: 90px 20px 100px; }
+      .lab-list { grid-template-columns: 1fr; }
+      .lab-tab { min-height: 70px; }
+      .lab-viewer, .lab-image { min-height: 560px; }
+      .lab-caption { grid-template-columns: 1fr; }
+      .lab-caption p { display: none; }
+      .lab-lens { display: none; }
+      .timeline-readout { margin: 0 24px 50px; }
+      .collection-head p { padding: 20px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+      .collection-grid { display: block; }
+      .object-card:nth-child(n) { width: 100%; min-height: 420px; margin: 0 0 16px; }
+      .visit-visual { min-height: 430px; }
+      .footer-right { gap: 45px; }
+      .footer-bottom { flex-direction: column; gap: 8px; }
+      .dialog-body { padding: 28px 24px; }
+    }
+
+    @media (pointer: coarse) { .cursor { display: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="scroll-progress" aria-hidden="true"><span id="scrollProgress"></span></div>
+  <header class="site-header" id="siteHeader">
+    <a class="brand" href="#top" aria-label="返回首页">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M25.4 15.8c0 6-4.6 10-10.1 10-5.8 0-9.9-4-9.9-9.4 0-5.1 3.8-9 8.6-9 4.4 0 7.5 3 7.5 6.8 0 3.5-2.6 6.1-5.8 6.1-2.9 0-5-2-5-4.6 0-2.3 1.7-4 3.8-4 1.8 0 3.1 1.2 3.1 2.8 0 1.3-.9 2.2-2.1 2.2-.9 0-1.6-.6-1.6-1.4"/>
+        </svg>
+      </span>
+      <span class="brand-name">拾光<small>TIME GALLERY</small></span>
+    </a>
+    <nav class="main-nav" aria-label="主要导航">
+      <a href="#about">序章</a>
+      <a href="#exhibitions">忆境</a>
+      <a href="#visit">踏入</a>
+    </nav>
+    <a class="header-action" href="#visit"><span></span>今日开放 09:00 - 17:00</a>
+    <button class="menu-toggle" id="menuToggle" aria-label="打开导航" aria-expanded="false">☰</button>
+  </header>
+
+  <main>
+    <section class="hero" id="top" aria-label="深海梦境互动体验">
+      <div class="stage" id="stage" aria-hidden="true">
+        <canvas id="scene"></canvas>
+        <div class="loading" id="loading">DIVING INTO DREAM</div>
+      </div>
+
+      <div class="hero-copy">
+        <div class="hero-index">MEMORY EXHIBITION · 时光特展</div>
+        <h1>FADED<br><span>TIME</span></h1>
+        <div class="hero-bottom">
+          <p>每一段回忆，都是岁月凝结的琥珀。滑动指尖，拂去尘埃与喧嚣，唤醒被时光封存的温柔瞬间。</p>
+          <a class="hero-link" href="#exhibitions" aria-label="进入忆境">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="excavate-hint">移动鼠标 · 潜入梦境</div>
+    </section>
+
+    <section class="museum-intro" id="about">
+      <div>
+        <span class="section-number">02 / ABOUT THE DREAM</span>
+      </div>
+      <div class="intro-content reveal">
+        <p class="eyebrow">关于深梦</p>
+        <h2>打捞梦境深处<br><em>遗落的每一次心跳</em></h2>
+        <div class="intro-row intro-narrative">
+          <p>她一次次潜入幽暗的深水，那里是记忆的坟墓。拨开缠绕的气泡与微光，她试图打捞那些散落的灵魂碎片。每一次下潜，都是与遗忘的无声抗争。</p>
+          <p>而在水面之上，那个满身水彩墨迹的少年正闭眼沉浮。他像一张脆弱的白纸，随时会被周围的黑暗吞噬。发光的红鱼是他们之间唯一的信使，穿梭在深海的暗流与纯白的幻境之间，传递着破碎的思念。</p>
+          <p>她带着白色的项圈，在冰冷的水流中与鱼群共舞。只要那个少年还没有化作飞灰，她就要把他在纯白幻境中碎裂的记忆，一块一块拼凑完整。这是一场关于救赎与重逢的漫长洄游。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="exhibitions" id="exhibitions">
+      <div class="section-topline reveal">
+        <p>03 / DREAM DIVE</p>
+        <span>潜入梦境 · Dive into memory</span>
+      </div>
+      <div class="scroll-stories">
+        <article class="story-row" data-story>
+          <div class="story-stage">
+            <button class="story-media" style="--image-position:center" data-title="纯白幻境" data-period="PAPER ILLUSION" data-description="他在水面之上闭眼沉睡，水彩晕染出脆弱的轮廓。那些半透明的红鱼，是他未曾说出口的思念。">
+              <img src="./assets/snow.png" alt="闭眼仰头的水彩长发少年" />
+              <span class="story-sequence">01</span><span class="story-view">查看梦境</span>
+            </button>
+            <div class="story-copy" data-year="01">
+              <small>PAPER ILLUSION</small><h3>纯白<br>幻境</h3>
+              <p>他在水面之上闭眼沉睡，水彩晕染出脆弱的轮廓。那些半透明的红鱼，是他未曾说出口的思念。</p>
+              <span class="story-line">DREAM CHAPTER 01</span>
+            </div>
+          </div>
+        </article>
+        <article class="story-row" data-story>
+          <div class="story-stage">
+            <button class="story-media" style="--image-position:46% center" data-title="深潜寻光" data-period="DEEP DIVE" data-description="她带着白色项圈，在冰冷幽暗的水流中与发光的鱼群共舞。每一次下潜，都是与遗忘争夺时间。">
+              <img src="./assets/earth.png" alt="被发光红鱼和气泡环绕的深海长发少女" />
+              <span class="story-sequence">02</span><span class="story-view">查看梦境</span>
+            </button>
+            <div class="story-copy" data-year="02">
+              <small>DEEP DIVE</small><h3>深潜<br>寻光</h3>
+              <p>她带着白色项圈，在冰冷幽暗的水流中与发光的鱼群共舞。每一次下潜，都是与遗忘争夺时间。</p>
+              <span class="story-line">DREAM CHAPTER 02</span>
+            </div>
+          </div>
+        </article>
+        <article class="story-row" data-story>
+          <div class="story-stage">
+            <button class="story-media" style="--image-position:center" data-title="红鱼洄游" data-period="RETURN OF FISH" data-description="思念化作鱼群，穿越水层的壁垒。它们是记忆的信标，指引着少女向水面最亮的地方游去。">
+              <img src="./assets/dream-03.png" alt="红鱼洄游" />
+              <span class="story-sequence">03</span><span class="story-view">查看梦境</span>
+            </button>
+            <div class="story-copy" data-year="03">
+              <small>RETURN OF FISH</small><h3>红鱼<br>洄游</h3>
+              <p>思念化作鱼群，穿越水层的壁垒。它们是记忆的信标，指引着少女向水面最亮的地方游去。</p>
+              <span class="story-line">DREAM CHAPTER 03</span>
+            </div>
+          </div>
+        </article>
+        <article class="story-row" data-story>
+          <div class="story-stage">
+            <button class="story-media" style="--image-position:center" data-title="双生共鸣" data-period="SOUL RESONANCE" data-description="当指尖触碰水面，碎裂的灵魂终于重聚。这是一场关于救赎与重逢的漫长洄游。">
+              <img src="./assets/dream-04.png" alt="双生共鸣" />
+              <span class="story-sequence">04</span><span class="story-view">查看梦境</span>
+            </button>
+            <div class="story-copy" data-year="04">
+              <small>SOUL RESONANCE</small><h3>双生<br>共鸣</h3>
+              <p>当指尖触碰水面，碎裂的灵魂终于重聚。这是一场关于救赎与重逢的漫长洄游。</p>
+              <span class="story-line">DREAM CHAPTER 04</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="visit" id="visit">
+      <div class="visit-visual" aria-hidden="true"></div>
+      <div class="visit-copy reveal">
+        <p class="eyebrow">潜入梦境</p>
+        <h2>与你的梦境<br>面对面</h2>
+        <div class="visit-info">
+          <div class="visit-line"><span>开放时间</span><strong>周二至周日 09:00 - 17:00</strong></div>
+          <div class="visit-line"><span>预约方式</span><strong>潜入潜意识</strong></div>
+          <div class="visit-line"><span>导览地点</span><strong>深海梦境展厅</strong></div>
+          <div class="visit-line"><span>出行路线</span><strong>潜意识4号线</strong></div>
+        </div>
+        <a class="ticket-button" href="#top"><span>潜入梦境</span><span>↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <h2 class="footer-title">DEEP<br>DREAM</h2>
+    <div class="footer-right">
+      <p class="eyebrow">深梦</p>
+      <nav class="footer-nav"><a href="#about">关于深梦</a><a href="#exhibitions">记忆画廊</a><a href="#visit">潜入梦境</a></nav>
+    </div>
+    <div class="footer-bottom"><span>© 2026 DEEP DREAM GALLERY</span><span>MEMORY · WATER · DEEP SEA</span></div>
+  </footer>
+
+  <dialog id="artifactDialog">
+    <div class="dialog-body">
+      <div class="dialog-top"><span class="dialog-period" id="dialogPeriod"></span><button class="dialog-close" aria-label="关闭">×</button></div>
+      <h3 id="dialogTitle"></h3>
+      <p id="dialogDescription"></p>
+    </div>
+  </dialog>
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const header = document.getElementById('siteHeader');
+      const menuToggle = document.getElementById('menuToggle');
+      const dialog = document.getElementById('artifactDialog');
+      const dialogTitle = document.getElementById('dialogTitle');
+      const dialogPeriod = document.getElementById('dialogPeriod');
+      const dialogDescription = document.getElementById('dialogDescription');
+      const scrollProgress = document.getElementById('scrollProgress');
+
+      const updatePageChrome = () => {
+        header.classList.toggle('is-scrolled', window.scrollY > 36);
+        const available = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = available > 0 ? Math.min(1, window.scrollY / available) : 0;
+        scrollProgress.style.transform = `scaleX(${progress})`;
+      };
+      updatePageChrome();
+      window.addEventListener('scroll', updatePageChrome, { passive: true });
+
+      menuToggle.addEventListener('click', () => {
+        const open = header.classList.toggle('is-open');
+        menuToggle.setAttribute('aria-expanded', String(open));
+        menuToggle.textContent = open ? '×' : '☰';
+      });
+
+      header.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+        header.classList.remove('is-open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        menuToggle.textContent = '☰';
+      }));
+
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: .12 });
+      document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
+
+      const navLinks = [...document.querySelectorAll('.main-nav a[href^="#"]')];
+      const navigationObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          navLinks.forEach(link => link.classList.toggle('is-active', link.getAttribute('href') === `#${entry.target.id}`));
+        });
+      }, { rootMargin: '-35% 0px -55% 0px', threshold: 0 });
+      ['about', 'exhibitions', 'visit'].forEach(id => navigationObserver.observe(document.getElementById(id)));
+
+      const countObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const element = entry.target;
+          const target = Number(element.dataset.count);
+          const suffix = element.dataset.suffix || '';
+          const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          const started = performance.now();
+          const duration = reduced ? 1 : 1200;
+          const tick = now => {
+            const t = Math.min(1, (now - started) / duration);
+            const eased = 1 - Math.pow(1 - t, 3);
+            element.textContent = `${Math.round(target * eased).toLocaleString('en-US')}${suffix}`;
+            if (t < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+          countObserver.unobserve(element);
+        });
+      }, { threshold: .7 });
+      document.querySelectorAll('[data-count]').forEach(element => countObserver.observe(element));
+
+      document.querySelectorAll('.story-media[data-title], .object-card[data-title]').forEach(card => {
+        card.addEventListener('click', () => {
+          dialogTitle.textContent = card.dataset.title;
+          dialogPeriod.textContent = card.dataset.period;
+          dialogDescription.textContent = card.dataset.description;
+          dialog.showModal();
+        });
+      });
+
+      dialog.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', event => {
+        const rect = dialog.getBoundingClientRect();
+        if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
+      });
+
+      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        document.querySelectorAll('[data-tilt]').forEach(card => {
+          card.addEventListener('pointermove', event => {
+            const rect = card.getBoundingClientRect();
+            const x = (event.clientX - rect.left) / rect.width - .5;
+            const y = (event.clientY - rect.top) / rect.height - .5;
+            card.classList.add('is-tilting');
+            card.style.transform = `perspective(950px) rotateX(${-y * 5.5}deg) rotateY(${x * 6.5}deg) translateY(-5px)`;
+          });
+          card.addEventListener('pointerleave', () => {
+            card.classList.remove('is-tilting');
+            card.style.transform = '';
+          });
+        });
+      }
+
+      const storyRows = [...document.querySelectorAll('[data-story]')];
+      const reduceStoryMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let storyAnimationFrame = 0;
+
+      function renderScrollStories() {
+        storyAnimationFrame = 0;
+        const viewportHeight = window.innerHeight;
+        const mobileLayout = window.innerWidth <= 600;
+        storyRows.forEach(row => {
+          if (mobileLayout || reduceStoryMotion.matches) {
+            row.style.setProperty('--media-y', '0px');
+            row.style.setProperty('--copy-y', '0px');
+            row.style.setProperty('--media-scale', '1.03');
+            row.style.setProperty('--story-opacity', '1');
+            return;
+          }
+          const rect = row.getBoundingClientRect();
+          const progress = Math.max(0, Math.min(1, (viewportHeight - rect.top) / (rect.height + viewportHeight)));
+          const center = progress - .5;
+          const opacity = Math.max(.28, 1 - Math.abs(center) * 1.28);
+          row.style.setProperty('--media-y', `${center * -72}px`);
+          row.style.setProperty('--copy-y', `${center * 118}px`);
+          row.style.setProperty('--media-scale', String(1.085 - progress * .055));
+          row.style.setProperty('--story-opacity', String(opacity));
+        });
+      }
+
+      function scheduleStoryRender() {
+        if (!storyAnimationFrame) storyAnimationFrame = requestAnimationFrame(renderScrollStories);
+      }
+
+      renderScrollStories();
+      window.addEventListener('scroll', scheduleStoryRender, { passive: true });
+      window.addEventListener('resize', scheduleStoryRender, { passive: true });
+
+      // ——— 首屏水墨发掘 Canvas：以下笔触参数与融合算法已锁定 ———
+      const BRUSH_SIZE = .155;
+      const TRAIL_LIFE = 1240;
+      const STAMP_GAP = 15;
+      const IDLE_STAMP_INTERVAL = 86;
+      const hero = document.getElementById('top');
+      const stage = document.getElementById('stage');
+      const canvas = document.getElementById('scene');
+      const cursor = document.getElementById('cursor');
+      const loading = document.getElementById('loading');
+      const ctx = canvas.getContext('2d', { alpha: false });
+      const snowLayer = document.createElement('canvas');
+      const earthLayer = document.createElement('canvas');
+      const revealLayer = document.createElement('canvas');
+      const maskLayer = document.createElement('canvas');
+      const snowCtx = snowLayer.getContext('2d');
+      const earthCtx = earthLayer.getContext('2d');
+      const revealCtx = revealLayer.getContext('2d');
+      const maskCtx = maskLayer.getContext('2d');
+      const snowImage = new Image();
+      const earthImage = new Image();
+      snowImage.src = './assets/snow.png';
+      earthImage.src = './assets/earth.png';
+
+      let width = 0, height = 0, renderScale = 1, brushRadius = 80;
+      let grainPattern = null, stamps = [], raf = 0, inside = false;
+      let lastInput = null, cursorPoint = null, lastIdleStamp = 0, seedCounter = 1, lastDirection = 0;
+      const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+      const smoothstep = t => t * t * (3 - 2 * t);
+
+      function seededRandom(seed) {
+        let value = seed | 0;
+        return () => {
+          value = value + 0x6D2B79F5 | 0;
+          let t = Math.imul(value ^ value >>> 15, 1 | value);
+          t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+          return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        };
+      }
+
+      function drawCover(targetCtx, image) {
+        const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+        const drawWidth = image.naturalWidth * scale;
+        const drawHeight = image.naturalHeight * scale;
+        targetCtx.clearRect(0, 0, width, height);
+        targetCtx.drawImage(image, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
+      }
+
+      function makeGrainPattern() {
+        const grain = document.createElement('canvas');
+        grain.width = grain.height = 192;
+        const grainCtx = grain.getContext('2d');
+        const pixels = grainCtx.createImageData(192, 192);
+        const random = seededRandom(94731);
+        for (let i = 0; i < pixels.data.length; i += 4) {
+          const n = random();
+          const alpha = n > .69 ? Math.round(Math.pow((n - .69) / .31, 1.8) * 105) : 0;
+          pixels.data[i + 3] = alpha;
+        }
+        grainCtx.putImageData(pixels, 0, 0);
+        return maskCtx.createPattern(grain, 'repeat');
+      }
+
+      function resizeCanvas() {
+        const rect = stage.getBoundingClientRect();
+        const cssWidth = Math.max(1, rect.width);
+        const cssHeight = Math.max(1, rect.height);
+        const maxDpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        renderScale = Math.min(maxDpr, 2300 / Math.max(cssWidth, cssHeight));
+        width = Math.round(cssWidth * renderScale);
+        height = Math.round(cssHeight * renderScale);
+        [canvas, snowLayer, earthLayer, revealLayer, maskLayer].forEach(layer => { layer.width = width; layer.height = height; });
+        brushRadius = clamp(Math.min(cssWidth, cssHeight) * BRUSH_SIZE, 108, 186) * renderScale;
+        grainPattern = makeGrainPattern();
+        stamps = [];
+        if (snowImage.complete && earthImage.complete) {
+          drawCover(snowCtx, snowImage);
+          drawCover(earthCtx, earthImage);
+          render(performance.now(), false);
+        }
+      }
+
+      function createStamp(x, y, now, intensity = 1, direction = 0, speed = 0) {
+        const random = seededRandom(seedCounter++ * 7919);
+        const radius = brushRadius * (.78 + random() * .4) * intensity;
+        const motion = clamp(speed / (42 * renderScale), 0, 1);
+        const major = radius * (1.02 + motion * .58) * (.91 + random() * .17);
+        const minor = radius * (.58 + random() * .26 - motion * .07);
+        const outline = [], fringe = [], splatters = [];
+        const points = 27, phaseA = random() * Math.PI * 2, phaseB = random() * Math.PI * 2;
+        for (let i = 0; i < points; i++) {
+          const angle = i / points * Math.PI * 2;
+          outline.push(.86 + Math.sin(angle * 3 + phaseA) * .105 + Math.sin(angle * 7 + phaseB) * .055 + (random() - .5) * .11);
+        }
+        for (let i = 0; i < 4 + Math.floor(random() * 5); i++) {
+          const angle = random() * Math.PI * 2, distance = .7 + random() * .36;
+          fringe.push({ x: Math.cos(angle) * distance, y: Math.sin(angle) * distance, radius: .055 + random() * .15, alpha: .12 + random() * .25 });
+        }
+        for (let i = 0; i < 2 + Math.floor(random() * 5); i++) {
+          const angle = random() * Math.PI * 2, distance = 1 + random() * .56;
+          splatters.push({ x: Math.cos(angle) * distance, y: Math.sin(angle) * distance, radius: .014 + random() * .045, alpha: .18 + random() * .32 });
+        }
+        stamps.push({ x, y, born: now, major, minor, angle: direction + (random() - .5) * .2, outline, fringe, splatters });
+      }
+
+      function addTrailPoint(point, now) {
+        if (!lastInput) { createStamp(point.x, point.y, now, 1, lastDirection, 0); lastInput = point; return; }
+        const dx = point.x - lastInput.x, dy = point.y - lastInput.y;
+        const distance = Math.hypot(dx, dy), gap = STAMP_GAP * renderScale;
+        const steps = Math.max(1, Math.ceil(distance / gap));
+        const direction = distance > .5 ? Math.atan2(dy, dx) : lastDirection;
+        for (let i = 1; i <= steps; i++) {
+          const t = i / steps, wobble = Math.sin((seedCounter + i) * 1.73) * brushRadius * .035;
+          createStamp(lastInput.x + dx * t - Math.sin(direction) * wobble, lastInput.y + dy * t + Math.cos(direction) * wobble, now - (steps - i) * 4, .9 + Math.sin((seedCounter + i) * .91) * .08, direction, distance);
+        }
+        lastInput = point;
+        lastDirection = direction;
+      }
+
+      function paintSoftCircle(x, y, radius, alpha) {
+        if (alpha <= .002 || radius <= 0) return;
+        const gradient = maskCtx.createRadialGradient(x, y, radius * .04, x, y, radius);
+        gradient.addColorStop(0, `rgba(255,255,255,${Math.min(1, alpha)})`);
+        gradient.addColorStop(.38, `rgba(255,255,255,${alpha * .94})`);
+        gradient.addColorStop(.7, `rgba(255,255,255,${alpha * .54})`);
+        gradient.addColorStop(.88, `rgba(255,255,255,${alpha * .14})`);
+        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+        maskCtx.fillStyle = gradient;
+        maskCtx.beginPath(); maskCtx.arc(x, y, radius, 0, Math.PI * 2); maskCtx.fill();
+      }
+
+      function stampLife(stamp, now) {
+        const age = clamp((now - stamp.born) / TRAIL_LIFE, 0, 1);
+        const appear = smoothstep(clamp(age / .045, 0, 1));
+        const fade = age < .62 ? 1 : Math.pow(clamp(1 - (age - .62) / .38, 0, 1), 1.28);
+        return { alpha: appear * fade, shrink: .055 + Math.pow(1 - age, .54) * .945 };
+      }
+
+      function traceOutline(stamp) {
+        maskCtx.beginPath();
+        stamp.outline.forEach((radius, i) => {
+          const angle = i / stamp.outline.length * Math.PI * 2;
+          const x = Math.cos(angle) * radius, y = Math.sin(angle) * radius;
+          if (!i) maskCtx.moveTo(x, y); else maskCtx.lineTo(x, y);
+        });
+        maskCtx.closePath();
+      }
+
+      function paintInkStamp(stamp, now) {
+        const life = stampLife(stamp, now);
+        if (life.alpha <= .002) return;
+        maskCtx.save();
+        maskCtx.translate(stamp.x, stamp.y); maskCtx.rotate(stamp.angle); maskCtx.scale(stamp.major * life.shrink, stamp.minor * life.shrink);
+        traceOutline(stamp); maskCtx.clip();
+        const wash = maskCtx.createRadialGradient(-.12, -.06, .04, 0, 0, 1.1);
+        wash.addColorStop(0, `rgba(255,255,255,${life.alpha})`);
+        wash.addColorStop(.42, `rgba(255,255,255,${life.alpha * .95})`);
+        wash.addColorStop(.72, `rgba(255,255,255,${life.alpha * .66})`);
+        wash.addColorStop(.91, `rgba(255,255,255,${life.alpha * .22})`);
+        wash.addColorStop(1, 'rgba(255,255,255,0)');
+        maskCtx.fillStyle = wash; maskCtx.fillRect(-1.25, -1.25, 2.5, 2.5); maskCtx.restore();
+        maskCtx.save();
+        maskCtx.translate(stamp.x, stamp.y); maskCtx.rotate(stamp.angle); maskCtx.scale(stamp.major * life.shrink, stamp.minor * life.shrink);
+        stamp.fringe.forEach(f => paintSoftCircle(f.x, f.y, f.radius, life.alpha * f.alpha));
+        stamp.splatters.forEach(dot => paintSoftCircle(dot.x, dot.y, dot.radius, life.alpha * dot.alpha));
+        maskCtx.restore();
+      }
+
+      function paintMask(now) {
+        maskCtx.clearRect(0, 0, width, height);
+        maskCtx.globalCompositeOperation = 'source-over';
+        stamps.forEach(stamp => paintInkStamp(stamp, now));
+        if (grainPattern) {
+          maskCtx.save(); maskCtx.globalCompositeOperation = 'destination-out'; maskCtx.globalAlpha = .42;
+          maskCtx.fillStyle = grainPattern; maskCtx.fillRect(0, 0, width, height); maskCtx.restore();
+        }
+      }
+
+      function compositeScene(now) {
+        paintMask(now);
+        revealCtx.clearRect(0, 0, width, height);
+        revealCtx.globalCompositeOperation = 'source-over'; revealCtx.drawImage(earthLayer, 0, 0);
+        revealCtx.globalCompositeOperation = 'destination-in'; revealCtx.drawImage(maskLayer, 0, 0);
+        revealCtx.globalCompositeOperation = 'source-over';
+        ctx.globalCompositeOperation = 'source-over'; ctx.drawImage(snowLayer, 0, 0); ctx.drawImage(revealLayer, 0, 0);
+      }
+
+      function render(now, continueLoop = true) {
+        raf = 0;
+        if (inside && cursorPoint && now - lastIdleStamp >= IDLE_STAMP_INTERVAL) {
+          createStamp(cursorPoint.x, cursorPoint.y, now, .84, lastDirection, 0); lastIdleStamp = now;
+        }
+        stamps = stamps.filter(stamp => now - stamp.born < TRAIL_LIFE);
+        compositeScene(now);
+        if (continueLoop && (inside || stamps.length)) scheduleRender();
+      }
+
+      function scheduleRender() { if (!raf) raf = requestAnimationFrame(render); }
+      function eventPoint(event) {
+        const rect = stage.getBoundingClientRect();
+        return { x: (event.clientX - rect.left) * (width / rect.width), y: (event.clientY - rect.top) * (height / rect.height) };
+      }
+      function moveCursor(event) { cursor.style.transform = `translate3d(${event.clientX - 45}px, ${event.clientY - 45}px, 0)`; }
+
+      hero.addEventListener('pointerenter', event => {
+        inside = true; lastInput = null; lastDirection = 0; cursorPoint = eventPoint(event);
+        moveCursor(event); cursor.classList.add('is-visible'); scheduleRender();
+      });
+      hero.addEventListener('pointermove', event => {
+        inside = true; cursorPoint = eventPoint(event); addTrailPoint(cursorPoint, performance.now());
+        moveCursor(event); cursor.classList.add('is-visible'); hero.classList.add('has-moved'); scheduleRender();
+      }, { passive: true });
+      hero.addEventListener('pointerleave', () => {
+        inside = false; lastInput = null; lastDirection = 0; cursorPoint = null; cursor.classList.remove('is-visible'); scheduleRender();
+      });
+      hero.addEventListener('pointerdown', event => {
+        inside = true; cursorPoint = eventPoint(event); lastInput = null; addTrailPoint(cursorPoint, performance.now());
+        hero.classList.add('has-moved'); scheduleRender();
+      });
+      window.addEventListener('resize', resizeCanvas, { passive: true });
+
+      Promise.all([snowImage.decode(), earthImage.decode()]).then(() => {
+        resizeCanvas(); loading.classList.add('is-ready');
+      }).catch(() => { loading.textContent = 'IMAGE LOAD FAILED'; });
+    })();
+  </script>
+</body>
+</html>
